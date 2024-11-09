@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcular Porcentaje</title>
+</head>
+<body>
+    <h2>Calculadora de Porcentaje</h2>
+    <form id="formulario">
+        <label for="valor1">Primer valor:</label>
+        <input type="number" id="valor1" step="any" required>
+        <br><br>
+        <label for="valor2">Segundo valor:</label>
+        <input type="number" id="valor2" step="any" required>
+        <br><br>
+        <button type="button" onclick="calcularPorcentaje()">Calcular</button>
+    </form>
+    <p id="resultado"></p>
+
+    <script>
+        function calcularPorcentaje() {
+            const valor1 = parseFloat(document.getElementById("valor1").value);
+            const valor2 = parseFloat(document.getElementById("valor2").value);
+            const resultadoElemento = document.getElementById("resultado");
+
+            if (isNaN(valor1) || isNaN(valor2)) {
+                resultadoElemento.textContent = "Por favor, ingrese valores numéricos válidos.";
+                return;
+            }
+
+            if (valor2 === 0) {
+                resultadoElemento.textContent = "El segundo valor no puede ser cero.";
+                return;
+            }
+
+            const porcentaje = (valor1 / valor2) * 100;
+            resultadoElemento.textContent = `${valor1} es el ${porcentaje.toFixed(2)}% de ${valor2}`;
+        }
+    </script>
+</body>
+</html>

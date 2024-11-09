@@ -1,0 +1,199 @@
+{% include '/includes/cabecera.html' %}
+
+<main>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <br>
+                    <input type="text" class="form-control" name="buscador" id="buscador" placeholder="Buscar Mi Solicitud">
+                    <br>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <!--Tabla con requerimientos del usuario-->
+                <table class="table" id="misSolicitudes">
+                    <thead>
+                        <tr class="table table-light">
+                            <th>Codigo</th>
+                            <th>Tipo</th>
+                            <th>Categoria</th>
+                            <th>Fecha de alta</th>
+                            <th>Estado</th>
+                            <th>Asunto</th>
+                            <th>Propietario</th>
+                            <th>Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for requerimiento in requerimientos %}
+                        <tr>
+                            <td>{{ requerimiento.codigo }}</td>
+                            {% for tipoRequerimiento in tiposRequerimientos %}
+                                {% if tipoRequerimiento.id == requerimiento.idTipoRequerimiento %}
+                                    <td>{{ tipoRequerimiento.tipo }}</td>
+                                {% endif %}
+                            {% endfor %}
+                            {% for catRequerimiento in catRequerimientos %}
+                                {% if catRequerimiento.id == requerimiento.idCategoriaRequerimiento %}
+                                    <td>{{ catRequerimiento.descripcion }}</td>
+                                {% endif %}
+                            {% endfor %}
+                            <td>{{ requerimiento.fechaYhora }}</td>
+                            <td>{{ requerimiento.estado }}</td>
+                            <td>{{ requerimiento.asunto }}</td>
+                            <td>
+                                {% for usuario in usuarios %}
+                                    {% if usuario.id == requerimiento.idEmisor %}
+                                        {{ usuario.nombre }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td><button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalVer{{ requerimiento.id }}" data-id="{{ requerimiento.id }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-clock-history" viewBox="0 0 16 16">
+                                    <path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022zm2.004.45a7 7 0 0 0-.985-.299l.219-.976q.576.129 1.126.342zm1.37.71a7 7 0 0 0-.439-.27l.493-.87a8 8 0 0 1 .979.654l-.615.789a7 7 0 0 0-.418-.302zm1.834 1.79a7 7 0 0 0-.653-.796l.724-.69q.406.429.747.91zm.744 1.352a7 7 0 0 0-.214-.468l.893-.45a8 8 0 0 1 .45 1.088l-.95.313a7 7 0 0 0-.179-.483m.53 2.507a7 7 0 0 0-.1-1.025l.985-.17q.1.58.116 1.17zm-.131 1.538q.05-.254.081-.51l.993.123a8 8 0 0 1-.23 1.155l-.964-.267q.069-.247.12-.501m-.952 2.379q.276-.436.486-.908l.914.405q-.24.54-.555 1.038zm-.964 1.205q.183-.183.35-.378l.758.653a8 8 0 0 1-.401.432z"/>
+                                    <path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0z"/>
+                                    <path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5"/>
+                                  </svg>
+                            </button></td>
+                            <!-- Modal Ver historial -->
+                            <div class="modal fade" id="modalVer{{ requerimiento.id }}" tabindex="-1" aria-labelledby="modalVerLabel{{ requerimiento.id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modalVerLabel{{ requerimiento.id }}">Detalle del Requerimiento</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <h6>Código:<span style="color: rgb(94, 94, 94);"> {{ requerimiento.codigo }}</span></h6>
+                                            <h6>Tipo: {% for tipoRequerimiento in tiposRequerimientos %}
+                                                {% if tipoRequerimiento.id == requerimiento.idTipoRequerimiento %}
+                                                    <span style="color: rgb(94, 94, 94);"> {{ tipoRequerimiento.tipo }}</span>
+                                                {% endif %}
+                                            {% endfor %}</h6>
+                                            <h6>Categoría: {% for catRequerimiento in catRequerimientos %}
+                                                {% if catRequerimiento.id == requerimiento.idCategoriaRequerimiento %}
+                                                <span style="color: rgb(94, 94, 94);"> {{ catRequerimiento.descripcion }}</span>
+                                                {% endif %}
+                                            {% endfor %}</h6>
+                                            <h6>Estado:<span style="color: rgb(94, 94, 94);"> {{ requerimiento.estado }}</span></h6>
+                                            <h6>Prioridad:<span style="color: rgb(94, 94, 94);"> {{ requerimiento.prioridad }}</span></h6>
+                                            <h6>Usuario Propietario: {% set usuario_encontrado = False %}
+                                                {% if requerimiento.tipoEmisor == "Interno" %}
+                                                    {% for interno in internos %}
+                                                        {% if interno.id == requerimiento.idEmisor %}
+                                                        <span style="color: rgb(94, 94, 94);">{{ interno.nombre }}</span>
+                                                            {% set usuario_encontrado = True %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                                {% if requerimiento.tipoEmisor == "Externo" %}
+                                                    {% for externo in externos %}
+                                                        {% if externo.id == requerimiento.idEmisor %}
+                                                        <span style="color: rgb(94, 94, 94);">{{ externo.nombre }}</span>
+                                                            {% set usuario_encontrado = True %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </h6>
+                                            <h6>Fecha y Hora de Alta:<span style="color: rgb(94, 94, 94);"> {{ requerimiento.fechaYhora }}</span></h6>
+                                            <h6>Asunto:<span style="color: rgb(94, 94, 94);">{{ requerimiento.asunto }}</span></h6>
+                                            <h6>Descripción: <span style="color: rgb(94, 94, 94);">{{ requerimiento.descripcion }}</span></h6>
+                                            <h6>Archivos Adjuntos:</h6>
+                                            <ul id="listaArchivosAdjuntos">
+                                                {% if requerimiento.archivos == [] %}
+                                                    <p>No hay archivos cargados</p>
+                                                {% endif %}
+                                                {% if requerimiento.archivos != [] %}
+                                                    {% for archivo in requerimiento.archivos %}
+                                                        <li>
+                                                            <a href="{{ url_for('static', filename='img/archivos/' + archivo.nombre) }}" target="_blank">
+                                                                {{ archivo.nombre.split('_', 1)[1] }}  <!-- Quita la parte antes del primer '_' -->
+                                                            </a>
+                                                        </li>
+                                                    {% endfor %}
+                                                    <br>
+                                                {% endif %}
+                                            </ul>
+                                            <h6>Comentarios:</h6>
+                                            <div class="comentarios-container" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+                                                <div class="list-group" id="comentariosContainer">
+                                                    {% for comentario in comentarios %}
+                                                        {% if comentario.idRequerimiento == requerimiento.id %}
+                                                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                                                            <div class="d-flex w-100 justify-content-between">
+                                                                <h5 class="mb-1">{{ comentario.asunto }}</h5>
+                                                                <small class="text-muted">{{ comentario.fechaYhora.strftime('%Y-%m-%d %H:%M') }}</small>
+                                                            </div>
+                                                            <p class="mb-1">{{ comentario.descripcion }}</p>
+                                                            <small class="text-muted">Enviado por: 
+                                                                {% for interno in internos %}
+                                                                    {% if interno.id == comentario.idUsuarioEmisor %}
+                                                                        {{ interno.nombre }}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                                {% for externo in externos %}
+                                                                    {% if externo.id == comentario.idUsuarioEmisor %}
+                                                                        {{ externo.nombre }}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </small>
+                                                        </a>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            <div class="input-container">
+                                                <form action="/comentario/registrar" method="POST">
+                                                    <div class="mb-3">
+                                                        <input type="number" name="idRequerimiento" value="{{requerimiento.id}}" hidden>
+                                                        <label for="asunto" class="form-label">Asunto</label>
+                                                        <input type="text" class="form-control" id="asunto" name="asunto" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="descripcion" class="form-label">Descripción</label>
+                                                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
+                                                    </div>
+                                                    <input type="text" value="misSolicitudes" name="ubicacion" hidden>
+                                                    <button type="submit" class="btn btn-primary">Agregar Comentario</button>
+                                                </form>
+                                            </div>
+                                            <div id="comentariosContainer"></div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            {% if requerimiento.estado == "Asignado" %}
+                                                <form action="/cerrarRequerimiento" method="post">
+                                                    <input type="number" name="idRequerimiento" value="{{requerimiento.id}}" hidden>
+                                                    <button type="submit" class="btn btn-danger">Cerrar Caso</button>
+                                                </form>
+                                            {% endif %}
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Fin modal Ver historial-->
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!--Fin tabla con requerimientos del usuario-->
+            </div>
+        </div>
+    </div>
+</main>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!--Buscador de requerimientos-->
+<script>
+    $(document).ready(function() {
+        $("#buscador").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#misSolicitudes tbody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().includes(value));
+            });
+        });
+    });
+</script>
+{% include '/includes/pie.html' %}
