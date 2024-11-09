@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Contenido del Archivo TXT</title>
+</head>
+<body>
+    <h1>Contenido del Archivo</h1>
+    {% if contenido %}
+        {{ contenido }}
+    {% elif error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+</body>
+</html>
