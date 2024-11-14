@@ -7,7 +7,7 @@ items = []
 
 @app.route('/add_item', methods=['POST'])
 def agregaritem():
-    item = request.json
+    item = request.get_json()
     items.append(item)
     return jsonify({'items': items}), 201
 

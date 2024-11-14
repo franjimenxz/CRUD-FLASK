@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route('/concatenar', methods=['POST'])
 def concatenar():
-    words = request.json
+    words = request.get_json()
     word1= words.get('word1', '')
     word2= words.get('word2', '')
     return jsonify({'word': word1 + word2}),201
